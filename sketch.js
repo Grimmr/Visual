@@ -32,6 +32,8 @@ function setup() { // Setup p5.js
 var upperPercentLimit = 0.0
 var lowerPercentLimit = 1.0
 
+var values = []
+
 //Runs every animation frame (60 fps)
 function draw() {
 	//
@@ -72,20 +74,21 @@ function draw() {
 		var phase = log(targetFreq - 64)
 		var upperLimit = log(15000-64)
 		var rawPercentPhase = phase/upperLimit - .25
+
 		
-		if(rawPercentPhase + .05 > upperPercentLimit)
+		if(rawPercentPhase + .1 > upperPercentLimit)
 		{
-			upperPercentLimit = rawPercentPhase + .05
+			upperPercentLimit = rawPercentPhase + .1
 		}
-		if(rawPercentPhase - .05 < lowerPercentLimit)
+		if(rawPercentPhase < lowerPercentLimit)
 		{
-			lowerPercentLimit = rawPercentPhase - .05
+			lowerPercentLimit = rawPercentPhase
 		}
 		
 		var percentPhase = ((rawPercentPhase - lowerPercentLimit)/(upperPercentLimit - lowerPercentLimit))
 		
 		//seires of ifs to find phase location
-		console.log(percentPhase)
+		console.log(rawPercentPhase)
 		if(percentPhase <= 1/5)
 		{
 			fill(256, 0, 256*(percentPhase/(1/5)))
