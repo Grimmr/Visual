@@ -1,12 +1,12 @@
 //=========================IGNORE======================+
 var fft,            // Allow us to analyze the song    |
-    numBars = 1024, // Power of 2 from 16 to 1024      |
+    numBars = 16384, // Power of 2 from 16 to 1024      |
     song;           // The p5 sound object             |
 //=========================IGNORE======================+
 
 //Custom frequency bands. 9 boundaries -> 8 channels
 //(Would be able to have overlapping channels in the circuit)
-let bands = [64,125,250,500,1000,2000,4000,8000,20000]
+let bands = [64,200,2000,20000]
 
 //=======================Load the song================================+
 document.getElementById("audiofile").onchange = function(event) {   //|
@@ -61,62 +61,24 @@ function draw() {
         
 		//For each virtaul band
 		var total = 0 //sum total of energy
-		var bandTotals = 0  //band energy levels
-        for(let i=0; i<8; i++){
+		var bandEnergy = [0,0,0]  //band energy levels
+		let upperEnergyBound = [100, 200, 100];
+        for(let i=0; i<3; i++){
             //Get the value for that band
             let h = fft.getEnergy(bands[i],bands[i+1])
-			total += h
-			bandTotals += (bands[i]+bands[i+1]/2)*h //linear interpolation to find bands center (should maybe be exp) multiplied by energy
+			bandEnergy[i] = h;
+			if(h > upperEnergyBound)
+			{
+				console.log("Upper energy band exceeded")
+			}
         }
-		//find average freq
-		var targetFreq = bandTotals/total
-		//select color
-		var phase = log(targetFreq - 64)
-		var upperLimit = log(15000-64)
-		var rawPercentPhase = phase/upperLimit - .25
-
-		
-		if(rawPercentPhase + .1 > upperPercentLimit)
-		{
-			upperPercentLimit = rawPercentPhase + .1
-		}
-		if(rawPercentPhase < lowerPercentLimit)
-		{
-			lowerPercentLimit = rawPercentPhase
-		}
-		
-		var percentPhase = ((rawPercentPhase - lowerPercentLimit)/(upperPercentLimit - lowerPercentLimit))
+		fill(255*(bandEnergy[0]/upperEnergyBound[0]), 255*(bandEnergy[1]/upperEnergyBound[1]), 255*(bandEnergy[2]/upperEnergyBound[2]))
 		
 		//seires of ifs to find phase location
-		console.log(rawPercentPhase)
-		if(percentPhase <= 1/5)
-		{
-			fill(256, 0, 256*(percentPhase/(1/5)))
-		}
-		else if(percentPhase <= 2/5)
-		{
-			fill(256-(256*((percentPhase-(1/5))/(1/5))), 0, 256)
-		}
-		else if(percentPhase <= 3/5)
-		{
-			fill(0, 256*(percentPhase-(2/5))/(1/5), 256)
-		}
-		else if(percentPhase <= 4/5)
-		{
-			fill(0, 256, 256-(256*((percentPhase-(4/5))/(1/5))))
-		}
-		else if (percentPhase <= 5/5)
-		{
-			fill(256*(percentPhase-(4/5))/(1/5), 256, 0)
-		}
+		console.log(bandEnergy[2])
+
 		
 		rect(0,0,600,595)
-		fill(255,0,0)
-		rect(600*lowerPercentLimit-3,595,6,5)
-		fill(0,255,0)
-		rect(600*upperPercentLimit-3,595,6,5)
-		fill(0,0,255)
-		rect(600*rawPercentPhase,595,6,5)
     }
 	
 	
