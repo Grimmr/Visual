@@ -1,6 +1,6 @@
 //=========================IGNORE======================+
 var fft,            // Allow us to analyze the song    |
-    numBars = 16384, // Power of 2 from 16 to 1024      |
+    numBars = 8192, // Power of 2 from 16 to 1024      |
     song;           // The p5 sound object             |
 //=========================IGNORE======================+
 
