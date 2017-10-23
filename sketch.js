@@ -29,17 +29,12 @@ function setup() { // Setup p5.js
     canvas = createCanvas(600,600)
 }
 
-var upperPercentLimit = 0.0
-var lowerPercentLimit = 1.0
+let oldPhase = 0
 
 var values = []
 
 //Runs every animation frame (60 fps)
 function draw() {
-	//
-	upperPercentLimit -= (upperPercentLimit-lowerPercentLimit)/600
-	lowerPercentLimit += (upperPercentLimit-lowerPercentLimit)/600
-	
 	//Deal with playing song & do fft
     if(typeof song != "undefined" && song.isLoaded() && !started) { 
         started = true
@@ -71,24 +66,16 @@ function draw() {
 		//find average freq
 		var targetFreq = bandTotals/total
 		//select color
-		var phase = log(targetFreq - 64)
-		var upperLimit = log(15000-64)
-		var rawPercentPhase = phase/upperLimit - .25
-
+		var phase = log(targetFreq - 1000)
+		var upperLimit = log(15000-1000)
+		var rawPercentPhase = phase/upperLimit
 		
-		if(rawPercentPhase + .1 > upperPercentLimit)
-		{
-			upperPercentLimit = rawPercentPhase + .1
-		}
-		if(rawPercentPhase < lowerPercentLimit)
-		{
-			lowerPercentLimit = rawPercentPhase
-		}
+		var percentPhase = ((oldPhase-rawPercentPhase)*.1) + rawPercentPhase
+		console.log(percentPhase)
 		
-		var percentPhase = ((rawPercentPhase - lowerPercentLimit)/(upperPercentLimit - lowerPercentLimit))
 		
 		//seires of ifs to find phase location
-		console.log(rawPercentPhase)
+		
 		if(percentPhase <= 1/5)
 		{
 			fill(256, 0, 256*(percentPhase/(1/5)))
@@ -111,12 +98,8 @@ function draw() {
 		}
 		
 		rect(0,0,600,595)
-		fill(255,0,0)
-		rect(600*lowerPercentLimit-3,595,6,5)
-		fill(0,255,0)
-		rect(600*upperPercentLimit-3,595,6,5)
 		fill(0,0,255)
-		rect(600*rawPercentPhase,595,6,5)
+		rect(600*percentPhase,595,6,5)
     }
 	
 	
